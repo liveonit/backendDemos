@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@entities/*": ["./src/entities/*"],
+      "@resolvers/*": ["./src/resolvers/*"],
+      "@services/*": ["./src/services/*"],
+      "@typeDefs/*": ["./src/typeDefs/*"]
+    }
+  }
+}

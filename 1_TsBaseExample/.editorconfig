@@ -1,0 +1,84 @@
+# This file is for unifying the coding style for different editors and IDEs
+# http://EditorConfig.org
+
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 2
+# Forces a hard wrap, so this is set looser than the ~100 width that we want to target
+max_line_length = 120
+
+# Code
+[*.{css,js,jsx,py,sh,sql,ts}]
+trim_trailing_whitespace = true
+
+# Configs
+[*.{json,yml,yaml}]
+trim_trailing_whitespace = true
+
+# Allow space-aligned table definitions
+[*.sql]
+indent_size = unset
+
+# Docs
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = unset
+indent_size = unset
+
+
+# Types and paths with lines that can run long
+[.env]
+max_line_length = unset
+
+[/db/migrations/**]
+max_line_length = unset
+
+[@app/shared-fullstack/db/**/*.ts]
+max_line_length = unset
+
+# - pgzod-generated zod types
+[**/package.json]
+max_line_length = unset
+
+
+# Fully ignored files
+[/@app/client-web/{ios,android}/**]
+end_of_line = unset
+insert_final_newline = unset
+charset = unset
+indent_style = unset
+indent_size = unset
+max_line_length = unset
+tab_width = unset
+
+[/secrets/**]
+end_of_line = unset
+insert_final_newline = unset
+charset = unset
+indent_style = unset
+indent_size = unset
+max_line_length = unset
+tab_width = unset
+
+[*.{xml,csv}]
+end_of_line = unset
+insert_final_newline = unset
+charset = unset
+indent_style = unset
+indent_size = unset
+max_line_length = unset
+tab_width = unset
+
+[.yarn/**.cjs]
+end_of_line = unset
+insert_final_newline = unset
+charset = unset
+indent_style = unset
+indent_size = unset
+max_line_length = unset
+tab_width = unset
