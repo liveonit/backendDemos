@@ -12,7 +12,7 @@
     "build": "npm run clean && tsc && tsc-alias && npm run copy-files",
     "tsc": "tsc",
     "start": "tsc && node .",
-    "dev": "nodemon -w src --ext ts,sql --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "development": "nodemon -w src --ext ts,sql --exec ts-node -r tsconfig-paths/register src/index.ts",
     "lint:fix": "eslint --fix --ignore-path .eslintignore --ext .js,.ts .",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "prettier": "prettier --ignore-path .gitignore \"**/*.+(js|ts|json)\"",

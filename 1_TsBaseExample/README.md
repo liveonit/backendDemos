@@ -16,9 +16,9 @@ o genere conflicto al intentar la confección
 
 ---
 
-## Correr el proyecto
+## Correr el Proyecto
 
-### Levantar el ambiente
+### Levantar el Ambiente
 
 Para correr el proyecto en development contamos con dos posibles formas de hacerlo, la primera es usando `Node.js` y dentro de este directorio ejecutar `npm run install` y luego `npm run dev` para correrlo.
 
@@ -30,7 +30,19 @@ Si se quiere correr en `Docker` estando en este directorio, ejecutar
 docker compose up -d
 ```
 
-### Bajar el ambiente
+---
+**TIP**
+
+Si el proyecto se corre con docker, se puede ejecutar
+
+```bash
+docker compose logs api # para ver los logs de su api
+docker compose logs -f api # para seguir los logs de la api en tiempo real
+```
+
+---
+
+### Bajar el Ambiente
 
 Para bajar el entorno si se corrió con Node, en la terminal que se este corriendo presionar `CTRL + C` o `CTRL + D`, en caso de correrse con docker compose, estando en este directorio, ejecutar
 
