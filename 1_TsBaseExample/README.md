@@ -6,7 +6,7 @@ Para desarrollar en este repositorio es necesario tener instalado [Nodejs >= 16.
 
 ## Configuración inicial
 
-Para correr este proyecto es necesario contar con el archivo `.env` en la raiz de este directorio, del cual la aplicación leera las variables de entorno, para eso puede copiar directamente el archivo `.env.example` a un archivo `.env` luego de esto puede setear sus propias configuraciones.
+Para correr este proyecto es necesario contar con el archivo `.env` en la raiz de este directorio, del cual la aplicación leerá las variables de entorno, para eso puede copiar directamente el archivo `.env.example` a un archivo `.env` luego de esto puede setear sus propias configuraciones.
 
 ---
 **NOTA**
@@ -32,7 +32,7 @@ docker compose up -d
 
 ### Bajar el ambiente
 
-Para bajar el entrno si se corrio con Node, en la terminal que se este corriendo presionar `CTRL + C` o `CTRL + D`, en caso de correrse con docker compose, estando en este directorio, ejecutar
+Para bajar el entorno si se corrió con Node, en la terminal que se este corriendo presionar `CTRL + C` o `CTRL + D`, en caso de correrse con docker compose, estando en este directorio, ejecutar
 
 ```bash
 docker compose down
@@ -40,7 +40,7 @@ docker compose down
 
 ## Testear el proyecto
 
-Una vez que tenemos corriendo el proyecto en nuestro entrno local, el mismo estara accesible bajo la URL `http://localhost:<your_port>` donde `your_port` tiene por defecto en `.env.example` el valor `3000`. Para probar el proyecto puede usar `Postman` o cualquier aplicación o CLI que permita hacer requests HTTP. En este caso y como Postman es una de las mas utilizadas, se deja en este proyecto el archivo `API Rest.postman_collection.json` el cual se puede importar directamente de postman  y con mínimos cambios (el puerto y los IDs en las request especificas como actualizar o eliminar) puede probar el backend listando, creando, actualizando y eliminando recursos.
+Una vez que tenemos corriendo el proyecto en nuestro entorno local, el mismo estará accesible bajo la URL `http://localhost:<your_port>` donde `your_port` tiene por defecto en `.env.example` el valor `3000`. Para probar el proyecto puede usar `Postman` o cualquier aplicación o CLI que permita hacer requests HTTP. En este caso y como Postman es una de las mas utilizadas, se deja en este proyecto el archivo `API Rest.postman_collection.json` el cual se puede importar directamente de postman  y con mínimos cambios (el puerto y los IDs en las request especificas como actualizar o eliminar) puede probar el backend listando, creando, actualizando y eliminando recursos.
 A continuación se muestra como importar la colección en `Postaman`
 
 ![Guía de como importar una coleccion en Postman](docs/images/import_collection_postman.gif)
