@@ -11,6 +11,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Create .env
+      run: cp .env.example .env
+      working-directory: 1_TsBaseExample
+
     - name: Start containers
       run: docker-compose -f "docker-compose.yml" up -d --build
       working-directory: 1_TsBaseExample
