@@ -22,7 +22,7 @@ export const verifyJwt = <T>(
     const publicKey = Buffer.from(config[key], 'base64').toString('ascii');
     return jwt.verify(token, publicKey) as T;
   } catch (error) {
-    logger.logError(error);
+    logger.error(error);
     throw new ApolloError('Invalid credentials');
   }
 };

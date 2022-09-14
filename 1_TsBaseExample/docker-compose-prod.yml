@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  api:
+    image: ${PROJECT_NAME}-api
+    container_name: ${PROJECT_NAME}-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    tty: true
+    environment:
+      NODE_ENV: development
+      ENVIRONMENT: development
+      FORCE_COLOR: 1
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./src:/api/src
+    ports:
+      - "${PORT}:${PORT}"

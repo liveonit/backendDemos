@@ -7,8 +7,8 @@ export const enum ErrorCode {
 }
 
 export const enum ErrorName {
-  BAD_REQUEST,
-  UNAUTHORIZED,
-  NOT_FOUND,
-  INTERNAL_SERVER,
+  BAD_REQUEST = 'BAD_REQUEST',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  NOT_FOUND = 'NOT_FOUND',
+  INTERNAL_SERVER = 'INTERNAL_SERVER',
 }

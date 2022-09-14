@@ -4,7 +4,7 @@ import { config } from "@src/config";
 
 const stream = {
   write: (message: string) => {
-    logger.logInfo(message.substring(0, message.lastIndexOf("\n")));
+    logger.info(message.substring(0, message.lastIndexOf("\n")));
   },
 };
 

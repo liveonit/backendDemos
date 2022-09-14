@@ -8,18 +8,18 @@ export const errorCatcher = (
   res: Response,
   _next: NextFunction,
 ): Response<unknown, Record<string, unknown>> => {
-  logger.error(err);
-
   if (err instanceof BaseError)
     return config.ENVIRONMENT === 'development'
-      ? res.status(err.status).json({
-          type: err.name,
-          message: err.message,
-          code: err.code,
-          success: false,
-          stack: err.stack,
+      ? res.status(err.code).json({
+          error: {
+            type: err.name,
+            message: err.message,
+            code: err.code,
+            success: false,
+            stack: err.stack,
+          },
         })
-      : res.status(err.status).json({ name: err.name, message: err.message });
+      : res.status(err.code).json({ error: { name: err.name, message: err.message } });
   return res.status(500).send();
 };
 

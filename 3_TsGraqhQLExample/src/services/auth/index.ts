@@ -136,7 +136,7 @@ class AuthSvc {
       // Send the access token as cookie
       return { ...refreshTokenInput, accessToken, id: userPayload.id } as UserSession;
     } catch (err: any) {
-      logger.logError('Error refreshing access token: ' + err, 'AUTH');
+      logger.error('Error refreshing access token: ' + err, 'AUTH');
       throw new ApolloError('Could not refresh access token');
     }
   }

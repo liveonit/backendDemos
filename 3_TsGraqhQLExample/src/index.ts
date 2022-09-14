@@ -50,7 +50,7 @@ async function main() {
       pubSub: pubsub,
     });
   } catch (err) {
-    logger.logError(err);
+    logger.error(err);
   }
 
   // Create an express app
@@ -101,7 +101,7 @@ async function main() {
       process.env.NODE_ENV === 'production'
         ? ApolloServerPluginLandingPageProductionDefault({
             embed: true,
-            graphRef: 'seguridad@ucu.com',
+            graphRef: 'user@example.com',
           })
         : ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
@@ -122,9 +122,9 @@ async function main() {
   app.use(urlencoded({ extended: false }));
 
   server.listen({ host: '0.0.0.0', port: config.apiPort }, (): void => {
-    logger.logInfo(`Enviornment: ===>>> ${config.nodeEnv} <<<===`, 'Node');
-    logger.logInfo(`Express server is now running on port ${config.apiPort}`, 'Express');
-    logger.logInfo(`is now running on /graphql`, 'GraphQL');
+    logger.info(`Enviornment: ===>>> ${config.nodeEnv} <<<===`, 'Node');
+    logger.info(`Express server is now running on port ${config.apiPort}`, 'Express');
+    logger.info(`is now running on /graphql`, 'GraphQL');
   });
 }
 if (require.main === module) {

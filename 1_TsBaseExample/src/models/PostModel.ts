@@ -26,13 +26,18 @@ export class Post {
   static update = (id: string, postData: Omit<IPost, 'id'>) => {
     const idx = this.posts.findIndex((p) => p.id === id);
     if (idx >= 0) {
+      Object.keys(postData).forEach(
+        (key) => (postData as any)[key] === undefined && delete (postData as any)[key],
+      );
       this.posts[idx] = { ...this.posts[idx], ...postData };
       return this.posts[idx];
     }
     throw new NotFound('Post not found');
   };
   static delete = (id: string) => {
+    const prevPost = [ ...this.posts ]
     this.posts = this.posts.filter((p) => p.id !== id);
+    if (prevPost.length === this.posts.length) throw new NotFound('Post not found')
   };
 
   // adding a post

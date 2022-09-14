@@ -13,7 +13,7 @@ global.logger = logger;
 async function main() {
   // Detect unhandled exceptions
   process.on('unhandledRejection', (reason, promise) => {
-    logger.logError(
+    logger.error(
       JSON.stringify({
         error: 'Unhandled promise rejection',
         promise,
@@ -30,7 +30,7 @@ async function main() {
   await redisClient.connect();
 
   app.listen({ host: '0.0.0.0', port: config.API_PORT }, (): void => {
-    logger.logSuccess(`🚀 🚀 🚀 API is running on http://localost:${config.API_PORT}`);
+    logger.success(`🚀 🚀 🚀 API is running on http://localost:${config.API_PORT}`);
   });
 }
 if (require.main === module) {

@@ -6,5 +6,5 @@ export const redisClient = createClient({
 });
 
 redisClient.on('error', (err) => {
-  logger.logError('Connection error: ' + err, 'REDIS');
+  logger.error('Connection error: ' + err, 'REDIS');
 });

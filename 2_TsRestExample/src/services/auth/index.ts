@@ -146,7 +146,7 @@ class AuthService {
       });
       return result;
     } catch (err: any) {
-      logger.logError('Error refreshing access token: ' + err, 'AUTH');
+      logger.error('Error refreshing access token: ' + err, 'AUTH');
       throw new InvalidDataError('Could not refresh access token');
     }
   }

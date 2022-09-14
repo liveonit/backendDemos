@@ -1,5 +1,5 @@
 /* eslint-disable no-var */
-declare interface Logger {
+declare type Logger = {
   debug: (data: any) => void;
   log: (data: any) => void;
   info: (data: any, processName?: string) => void;

@@ -37,19 +37,19 @@ export class Db {
     try {
       if (!this.dataSource.isInitialized) {
         await this.dataSource.initialize();
-        logger.logSuccess('DB CONNECTION SUCCESSFULLY CREATED 💾 🗂 💾', 'TypeORM');
+        logger.success('DB CONNECTION SUCCESSFULLY CREATED 💾 🗂 💾', 'TypeORM');
       } else {
-        logger.logSuccess('DB ALREADY CONNECTED 💾 🗂 💾', 'TypeORM');
+        logger.success('DB ALREADY CONNECTED 💾 🗂 💾', 'TypeORM');
       }
       if (runAfterConnect === 'migrations') await this.runMigrations();
       else if (runAfterConnect === 'syncModels' || runAfterConnect === 'dropAndSyncModels')
         await this.syncModels(runAfterConnect === 'dropAndSyncModels');
     } catch (err) {
-      logger.logError('DB CONNECTION REFUSED 📛 🆘 📛 ', 'TypeORM');
-      logger.logError(`${err}`, 'TypeORM');
+      logger.error('DB CONNECTION REFUSED 📛 🆘 📛 ', 'TypeORM');
+      logger.error(`${err}`, 'TypeORM');
       if (retry) {
         if (this.config.logging === 'all')
-          logger.logInfo(
+          logger.info(
             `It will try to reestablish connection ${retryMsInterval || 30 * 1000} ms`,
             'TypeORM',
           );
@@ -63,17 +63,17 @@ export class Db {
     try {
       await this.dataSource.destroy();
       if (this.config.logging === 'all')
-        logger.logSuccess('DB CONNECTION CLOSED SUCCESSFULLY 💾 🗂 💾', 'TypeORM');
+        logger.success('DB CONNECTION CLOSED SUCCESSFULLY 💾 🗂 💾', 'TypeORM');
     } catch (err) {
-      logger.logError(`${err}`, `TypeORM`);
+      logger.error(`${err}`, `TypeORM`);
     }
   };
 
   public getConnection = () => {
     if (!this.dataSource.isInitialized) {
-      logger.logError('Database disconnected', 'TypeORM');
+      logger.error('Database disconnected', 'TypeORM');
       this.connectDb({ retry: true }).then(() =>
-        logger.logSuccess('Database automatically reconnected!'),
+        logger.success('Database automatically reconnected!'),
       );
     }
     return this.dataSource;
@@ -83,27 +83,27 @@ export class Db {
     try {
       await this.getConnection().synchronize(dropBefore);
       if (this.config.logging === 'all')
-        logger.logInfo('Synchronization between API models and DB was done!!!', 'TypeORM');
+        logger.info('Synchronization between API models and DB was done!!!', 'TypeORM');
     } catch (err) {
-      logger.logError('Synchronization between API models models and DB failed', 'TypeORM');
+      logger.error('Synchronization between API models models and DB failed', 'TypeORM');
     }
   };
 
   public runMigrations = async () => {
     try {
-      logger.logInfo('Running migrations...', 'TypeORM');
+      logger.info('Running migrations...', 'TypeORM');
       const hasPendingMigrations = await this.getConnection().showMigrations();
       if (hasPendingMigrations) {
         const appliedMigrations = await this.getConnection().runMigrations();
-        logger.logSuccess(
+        logger.success(
           `${appliedMigrations?.length || 0} migrations were successfully applied!`,
           `TypeORM`,
         );
-      } else logger.logSuccess(`There is no pending migration to apply!`, `TypeORM`);
+      } else logger.success(`There is no pending migration to apply!`, `TypeORM`);
 
       return true;
     } catch (err) {
-      logger.logError(`Error running migrations. ERROR: ${err}`, `TypeORM`);
+      logger.error(`Error running migrations. ERROR: ${err}`, `TypeORM`);
       return false;
     }
   };

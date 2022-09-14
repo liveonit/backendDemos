@@ -1,4 +1,5 @@
 import { postService } from '@src/services/PostService';
+import { BadRequest, NotFound } from '@src/utils/errors';
 import { Request, Response } from 'express';
 
 export class PostController {
@@ -13,6 +14,7 @@ export class PostController {
     // === Here should be the request validations ===
     const id: string = req.params.id;
     const post = postService.getPost(id);
+    if (!post) throw new NotFound();
     return res.status(200).json({
       data: post,
     });
@@ -21,8 +23,8 @@ export class PostController {
   static updatePost = async (req: Request, res: Response) => {
     // === Here should be the request validations ===
     const id: string = req.params.id;
-    const title: string = req.body.title ?? null;
-    const body: string = req.body.body ?? null;
+    const title: string = req.body.title || undefined;
+    const body: string = req.body.body || undefined;
     const updatedPost = postService.updatePost(id, { title, body });
     return res.status(200).json({
       data: updatedPost,
@@ -39,6 +41,7 @@ export class PostController {
   static addPost = async (req: Request, res: Response) => {
     // === Here should be the request validations ===
     const title: string = req.body.title;
+    if (!title) throw new BadRequest('Title is required');
     const body: string = req.body.body;
     const post = postService.addPost({ title, body });
     return res.status(200).json({

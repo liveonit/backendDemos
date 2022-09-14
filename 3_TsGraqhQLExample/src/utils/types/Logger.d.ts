@@ -2,11 +2,11 @@
 declare interface Logger {
   debug: (data: any) => void;
   log: (data: any) => void;
-  logInfo: (data: any, processName?: string) => void;
-  logSuccess: (data: any, processName?: string) => void;
-  logTitle: (title: string) => void;
-  logWarning: (data: any, processName?: string) => void;
-  logError: (data: any, processName?: string) => void;
+  info: (data: any, processName?: string) => void;
+  success: (data: any, processName?: string) => void;
+  title: (title: string) => void;
+  warning: (data: any, processName?: string) => void;
+  error: (data: any, processName?: string) => void;
 }
 
 declare global {

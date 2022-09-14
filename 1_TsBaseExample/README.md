@@ -50,7 +50,7 @@ Para bajar el entorno si se corrió con Node, en la terminal que se esté corrie
 docker compose down
 ```
 
-## Testear el proyecto
+## Testear el Proyecto
 
 Una vez que tenemos corriendo el proyecto en nuestro entorno local, el mismo estará accesible bajo la URL `http://localhost:<your_port>` donde `your_port` tiene por defecto en `.env.example` el valor `3000`. Para probar el proyecto puede usar `Postman` o cualquier aplicación o CLI que permita hacer requests HTTP. En este caso y como Postman es una de las más utilizadas, se deja en este proyecto el archivo `API Rest.postman_collection.json` el cual se puede importar directamente de postman  y con mínimos cambios (el puerto y los IDs en las request específicas como actualizar o eliminar) puede probar el backend listando, creando, actualizando y eliminando recursos.
 A continuación se muestra como importar la colección en `Postman`
