@@ -1,7 +1,7 @@
 import { Author } from '@src/entities/Author';
 import { Book } from '@src/entities/Book';
 import { CreateAuthorBodyType, UpdateAuthorBodyType } from '@src/typeDefs/Author';
-import { NotFoundError } from '@src/utils/errors';
+import { NotFound } from '@src/utils/errors';
 import { FindManyOptions } from 'typeorm';
 
 export class AuthorSvc {
@@ -28,7 +28,7 @@ export class AuthorSvc {
 
   async deleteAuthor(id: number): Promise<number> {
     const author = await Author.findOne({ where: { id } });
-    if (!author) throw new NotFoundError();
+    if (!author) throw new NotFound();
     await author.remove();
     return id;
   }

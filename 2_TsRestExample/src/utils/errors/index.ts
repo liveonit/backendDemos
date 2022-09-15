@@ -1,6 +1,6 @@
 export * from './BaseError';
-export * from './ UnauthorizedError';
-export * from './InternalServerError';
-export * from './InvalidDataError';
-export * from './InvalidParamError';
-export * from './NotFoundError';
+export * from './BadRequest';
+export * from './NotFound';
+export * from './Unauthorized';
+export * from './InternalServer';
+export * from './types'

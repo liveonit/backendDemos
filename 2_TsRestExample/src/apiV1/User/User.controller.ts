@@ -1,4 +1,4 @@
-import { handleErrorAsync } from '@src/middlewares/errorsCatcher';
+import { handleErrorAsync } from '@src/middlewares/errorCatcher';
 import {
   createUserBodySchema,
   loginBodySchema,
@@ -8,7 +8,7 @@ import {
 import { Request, Response } from 'express';
 
 import _ from 'lodash';
-import { InvalidParamError, UnauthorizedError } from '@src/utils/errors';
+import { BadRequest, Unauthorized } from '@src/utils/errors';
 import { authSvc } from '@src/services/auth';
 import { paginationQuerySchema } from '@src/typeDefs/PaginationQueryType';
 
@@ -24,7 +24,7 @@ class AuthorController {
 
   public getById = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!req.params.id) throw new InvalidParamError('Id is required');
+    if (!req.params.id) throw new BadRequest('Id is required');
     const user = await authSvc.getOne({ id });
     return res.status(200).json(user);
   });
@@ -43,7 +43,7 @@ class AuthorController {
    */
   public update = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!req.params.id) throw new InvalidParamError('Id is required');
+    if (!req.params.id) throw new BadRequest('Id is required');
     const user = updateUserBodySchema.parse(req.body);
     const updatedUser = await authSvc.updateUser(id, user);
     return res.status(200).json(updatedUser);
@@ -54,7 +54,7 @@ class AuthorController {
    */
   public delete = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     await authSvc.delete(id);
     return res.status(200).send();
   });
@@ -63,7 +63,7 @@ class AuthorController {
    * Elimina el usuario logueado
    */
   public deleteMe = handleErrorAsync(async (req: Request, res: Response) => {
-    if (!req.user?.id) throw new UnauthorizedError('Invalid credentials');
+    if (!req.user?.id) throw new Unauthorized('Invalid credentials');
     const userId = req.user.id;
     await authSvc.delete(userId);
     return res.status(200).send();
@@ -73,7 +73,7 @@ class AuthorController {
    * Devuelve el perfil del usuario logueado
    */
   public getProfile = handleErrorAsync(async (req: Request, res: Response) => {
-    if (!req.user?.id) throw new UnauthorizedError('Invalid credentials');
+    if (!req.user?.id) throw new Unauthorized('Invalid credentials');
     const { id } = req.user;
     const user = await authSvc.getOne({ id });
     return res.status(200).json(user);
@@ -92,7 +92,7 @@ class AuthorController {
    * Finalizar la sesion del usuario
    */
   public logout = handleErrorAsync(async (req: Request, res: Response) => {
-    if (!req.user?.id) throw new UnauthorizedError('Invalid credentials');
+    if (!req.user?.id) throw new Unauthorized('Invalid credentials');
     const { id } = req.user;
     await authSvc.logout(id);
     return res.status(200).send();

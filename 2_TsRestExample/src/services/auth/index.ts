@@ -16,9 +16,9 @@ import _ from 'lodash';
 import { redisClient } from '@src/redisCient';
 import { CreateUserBodyType, RefreshTokenBodyType, UpdateUserBodyType } from '@src/typeDefs/User';
 import { LoginBodyType } from '@src/typeDefs/User/LoginBody';
-import { Request, Response, NextFunction } from 'express';
-import { InvalidDataError, NotFoundError, UnauthorizedError } from '@src/utils/errors';
-import { handleErrorAsync } from '@src/middlewares/errorsCatcher';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { BadRequest, NotFound, Unauthorized } from '@src/utils/errors';
+import { handleErrorAsync } from '@middlewares/errorCatcher';
 export interface CustomContext {
   req: Request;
   res: Response;
@@ -55,7 +55,7 @@ class AuthService {
   public async delete(id: string): Promise<boolean> {
     const result = await User.delete({ id });
     await redisClient.del(id);
-    if (!result.affected) throw new NotFoundError();
+    if (!result.affected) throw new NotFound();
     return !!result.affected;
   }
 
@@ -101,10 +101,10 @@ class AuthService {
     if (user) {
       const correctPassword = await argon2.verify(user.password!, password);
       if (!correctPassword) {
-        throw new UnauthorizedError('Invalid Credentials');
+        throw new Unauthorized('Invalid Credentials');
       }
     } else {
-      throw new UnauthorizedError('Invalid Credentials');
+      throw new Unauthorized('Invalid Credentials');
     }
     const signedToken = await this.signToken(_.omit(user, ['password']));
     const result = userSessionSchema.parse(signedToken);
@@ -123,13 +123,13 @@ class AuthService {
         'REFRESH_TOKEN_PUBLIC_KEY',
       );
       if (!decoded) {
-        throw new InvalidDataError('Could not refresh access token');
+        throw new BadRequest('Could not refresh access token');
       }
 
       // Check if the user has a valid session
       const session = await redisClient.get(decoded.id);
       if (!session) {
-        throw new InvalidDataError('Could not refresh access token');
+        throw new BadRequest('Could not refresh access token');
       }
       const userPayload = JSON.parse(session);
 
@@ -147,7 +147,7 @@ class AuthService {
       return result;
     } catch (err: any) {
       logger.error('Error refreshing access token: ' + err, 'AUTH');
-      throw new InvalidDataError('Could not refresh access token');
+      throw new BadRequest('Could not refresh access token');
     }
   }
 
@@ -158,14 +158,34 @@ class AuthService {
     return null;
   }
 
-  public authRequiredMiddleware(requiredPermissionsName: string[]) {
+  /**
+   * @param {string[]} requiredPermissionsName - A list of permissions that the user needs to have to pass through this middleware,
+   * if the list is empty the only requirement is that the user has to be authenticated
+   *
+   * @returns {Promise<import('express').RequestHandler>} An express.RequestHandler so its could be used in the express `app` or `router` methods
+   *
+   * @example
+   * // It should be used in an express router function, for example
+   *
+   * // Only auth required
+   * router.get('/', authSvc.authRequiredMiddleware([]), authorController.getMany);
+   *
+   * // EditAuthors permission required
+   * router.post('/', authSvc.authRequiredMiddleware(['editAuthors']), authorController.create);
+   *
+   * //  Or to require authorization throughout the App, add this before setting the app's routers
+   * app.use('/', authSvc.authRequiredMiddleware([]));
+   *
+   */
+
+  public authRequiredMiddleware(requiredPermissionsName: string[]): RequestHandler {
     return handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
       const token = this.getTokenFromHeader(req);
-      if (token == null) throw new UnauthorizedError('Invalid Credentials');
+      if (token == null) throw new Unauthorized('Invalid Credentials');
       const userPayload: UserPayloadType | null = userPayloadSchema.parse(
         verifyJwt(token, 'ACCESS_TOKEN_PUBLIC_KEY'),
       );
-      if (!userPayload) throw new UnauthorizedError('Invalid credentials');
+      if (!userPayload) throw new Unauthorized('Invalid credentials');
       let result;
       if (requiredPermissionsName.length) {
         let userPermissions: string[] = [];
@@ -175,7 +195,7 @@ class AuthService {
         }
         const validPermissions = requiredPermissionsName.filter((p) => userPermissions.includes(p));
         if (requiredPermissionsName.length && !validPermissions.length)
-          throw new UnauthorizedError('Invalid permissions');
+          throw new Unauthorized('Invalid permissions');
         else result = userPayload;
       } else {
         result = userPayload;

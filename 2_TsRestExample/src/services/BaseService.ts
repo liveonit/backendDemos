@@ -1,5 +1,5 @@
 import { db, Db } from '@src/db';
-import { NotFoundError } from '@src/utils/errors';
+import { NotFound } from '@src/utils/errors';
 import {
   BaseEntity,
   FindManyOptions,
@@ -40,7 +40,7 @@ export class BaseService<T extends BaseEntity> {
 
   public readonly delete = async <I extends string | number | ObjectID>(id: I) => {
     const result = await this.getEntity().delete(id);
-    if (result.affected === 0) throw new NotFoundError();
+    if (result.affected === 0) throw new NotFound();
     else return id;
   };
 

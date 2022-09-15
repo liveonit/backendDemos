@@ -8,6 +8,7 @@ export const errorCatcher = (
   res: Response,
   _next: NextFunction,
 ): Response<unknown, Record<string, unknown>> => {
+  logger.error(err);
   if (err instanceof BaseError)
     return config.ENVIRONMENT === 'development'
       ? res.status(err.code).json({

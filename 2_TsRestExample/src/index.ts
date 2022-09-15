@@ -1,13 +1,11 @@
 import 'reflect-metadata';
 
-import app from './App';
+import { App } from './App';
 
 import { db } from './db';
 import { redisClient } from './redisCient';
 
-import { logger } from './utils/helpers/Logger';
-import { config } from './config';
-
+import { logger } from '@utils/Logger';
 global.logger = logger;
 
 async function main() {
@@ -29,9 +27,8 @@ async function main() {
   // Connect Redis client cache
   await redisClient.connect();
 
-  app.listen({ host: '0.0.0.0', port: config.API_PORT }, (): void => {
-    logger.success(`🚀 🚀 🚀 API is running on http://localost:${config.API_PORT}`);
-  });
+  const app = new App();
+  app.start();
 }
 if (require.main === module) {
   main();

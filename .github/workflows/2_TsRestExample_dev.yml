@@ -1,0 +1,38 @@
+name: Test 2_TsRestExample
+
+on: [push, pull_request]
+
+jobs:
+  docker:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Create .env
+      run: cp .env.example .env
+      working-directory: 2_TsRestExample
+
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+      working-directory: 2_TsRestExample
+
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 18.x
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: 2_TsRestExample
+
+    - name: Run tests
+      run: npm run test
+      working-directory: 2_TsRestExample
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yml" down
+      working-directory: 2_TsRestExample

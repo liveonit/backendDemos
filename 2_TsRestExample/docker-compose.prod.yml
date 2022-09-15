@@ -51,10 +51,10 @@ services:
     container_name: ${PROJECT_NAME}-api
     build:
       context: ./
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile
     tty: true
     environment:
-      ENVIRONMENT: development
+      ENVIRONMENT: production
       FORCE_COLOR: 1
     restart: always
     depends_on:

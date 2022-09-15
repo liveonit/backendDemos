@@ -1,8 +1,8 @@
-import { handleErrorAsync } from '@src/middlewares/errorsCatcher';
+import { handleErrorAsync } from '@src/middlewares/errorCatcher';
 import { authorSvc } from '@src/services/AuthorService';
 import { createAuthorBodySchema, updateAuthorBodySchema } from '@src/typeDefs/Author';
 import { paginationQuerySchema } from '@src/typeDefs/PaginationQueryType';
-import { InvalidParamError } from '@src/utils/errors';
+import { BadRequest } from '@src/utils/errors';
 import { Request, Response } from 'express';
 
 class AuthorController {
@@ -20,7 +20,7 @@ class AuthorController {
 
   public update = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     const body = updateAuthorBodySchema.parse(req.body);
     const result = await authorSvc.updateAuthor(+id, body);
     return res.status(200).json(result);
@@ -28,14 +28,14 @@ class AuthorController {
 
   public getById = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     const result = await authorSvc.getById(+id);
     return res.status(200).json(result);
   });
 
   public delete = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     await authorSvc.deleteAuthor(+id);
     return res.status(200).json();
   });

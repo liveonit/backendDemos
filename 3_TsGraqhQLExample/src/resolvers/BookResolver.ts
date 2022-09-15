@@ -27,7 +27,7 @@ export class BookResolver {
   }
 
   @Mutation(() => Book)
-  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editAuthors'])])
+  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editBooks'])])
   async createBook(@Arg('data') data: CreateBookInput): Promise<Book> {
     const book = Book.create(data as Book);
     book.author = await Author.findOneOrFail({ where: { id: data.authorId } });
@@ -43,7 +43,7 @@ export class BookResolver {
   }
 
   @Mutation(() => Book)
-  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editAuthors'])])
+  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editBooks'])])
   async updateBook(
     @Arg('id', () => Int) id: number,
     @Arg('data') data: UpdateBookInput,
@@ -58,7 +58,7 @@ export class BookResolver {
   }
 
   @Mutation(() => Int)
-  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editAuthors'])])
+  @UseMiddleware([gqlLogMiddleware, authSvc.gqlAuthRequiredMiddleware(['editBooks'])])
   async deleteBook(@Arg('id', () => Int) id: number): Promise<number> {
     const book = await Book.findOne({ where: { id } });
     if (!book) throw new Error('Book not found!');

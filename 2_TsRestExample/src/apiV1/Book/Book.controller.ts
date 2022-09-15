@@ -1,8 +1,8 @@
-import { handleErrorAsync } from '@src/middlewares/errorsCatcher';
+import { handleErrorAsync } from '@src/middlewares/errorCatcher';
 import { bookSvc } from '@src/services/BookService';
 import { createBookBodySchema, updateBookBodySchema } from '@src/typeDefs/Book';
 import { paginationQuerySchema } from '@src/typeDefs/PaginationQueryType';
-import { InvalidParamError } from '@src/utils/errors';
+import { BadRequest } from '@src/utils/errors';
 import { Request, Response } from 'express';
 
 class BookController {
@@ -20,7 +20,7 @@ class BookController {
 
   public updateBook = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     const body = updateBookBodySchema.parse(req.body);
     const result = await bookSvc.updateBook(+id, body);
     return res.status(200).json(result);
@@ -28,14 +28,14 @@ class BookController {
 
   public getById = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     const result = await bookSvc.getById(+id);
     return res.status(200).json(result);
   });
 
   public delete = handleErrorAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
-    if (!id) throw new InvalidParamError('Id is required');
+    if (!id) throw new BadRequest('Id is required');
     await bookSvc.deleteBook(+id);
     return res.status(200).json();
   });

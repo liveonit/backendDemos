@@ -1,6 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { config } from '@src/config';
-import { UnauthorizedError } from '@src/utils/errors';
+import { Unauthorized } from '@src/utils/errors';
 
 export const signJwt = (
   payload: Object,
@@ -22,6 +22,6 @@ export const verifyJwt = <T>(
     const publicKey = Buffer.from(config[key], 'base64').toString('ascii');
     return jwt.verify(token, publicKey) as T;
   } catch (error) {
-    throw new UnauthorizedError('Invalid credentials');
+    throw new Unauthorized('Invalid credentials');
   }
 };

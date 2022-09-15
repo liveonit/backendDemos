@@ -24,15 +24,13 @@ export class App {
     this.app.use(urlencoded({ extended: false }));
     this.app.use(helmet());
     this.app.use(loggerMiddleware);
-    this.app.use(errorCatcher);
   };
   private setRoutes = (): void => {
     this.app.use('/v1', router);
   };
 
-  private notFoundError = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (!err) throw new NotFound();
-    next(err);
+  private notFoundError = (req: Request, res: Response, next: NextFunction) => {
+    throw new NotFound();
   };
   public start = (): void => {
     this.app.listen(config.PORT, () => {
