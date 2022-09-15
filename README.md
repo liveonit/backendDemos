@@ -3,7 +3,7 @@
 | API NAME | Development Build | Production Build |
 | --- | --- | --- |
 | 1_TsBaseExample  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/1_TsBaseExample_dev.yml/badge.svg)  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/1_TsBaseExample_prod.yml/badge.svg) |
-| 2_TsRestExample  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/1_TsRestExample_dev.yml/badge.svg)  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/1_TsRestExample_prod.yml/badge.svg)  |
+| 2_TsRestExample  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/2_TsRestExample_dev.yml/badge.svg)  | ![Build status](https://github.com/liveonit/backendDemos/actions/workflows/2_TsRestExample_prod.yml/badge.svg)  |
 | 3_TsGraphQLExample  | Not tested yet  | Not tested yet  |
 
 Este repositorio cuenta con 3 backend APIs que corren en el entorno de `NodeJS`, cada una de las cuales utiliza diferentes frameworks y diferente grado de profundidad.
