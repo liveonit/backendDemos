@@ -12,6 +12,15 @@ describe('👉👉👉 Api tests 👈👈👈', () => {
       expect(res.body.dbMigrations).toBe("There aren't pending migrations");
       expect(res.body.redisStatus).toBe('Connected');
     });
+
+    test('Invalid path should return 404', async () => {
+      const res = await request(API_URL).get('/invalid_path').send();
+      expect(res.status).toEqual(404);
+      expect(res.body.error.type).toBe('NOT_FOUND');
+      expect(res.body.error.message).toBe('Resource not found');
+      expect(res.body.error.code).toBe(404);
+      expect(res.body.error.success).toBeFalsy();
+    });
   });
 });
 //   describe('test auth middleware 🔐', () => {
