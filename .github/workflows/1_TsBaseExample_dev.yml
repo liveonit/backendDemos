@@ -28,7 +28,7 @@ jobs:
       run: npm install
       working-directory: 1_TsBaseExample
 
-    - name: Run tests
+    - name: Check API status and run tests
       run: docker-compose logs api && npm run test
       working-directory: 1_TsBaseExample
 

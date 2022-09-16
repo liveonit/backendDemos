@@ -28,8 +28,8 @@ jobs:
       run: npm install
       working-directory: 2_TsRestExample
 
-    - name: Run tests
-      run: npm run test
+    - name: Check API status and run tests
+      run: docker-compose logs api && npm run test
       working-directory: 2_TsRestExample
 
     - name: Stop containers
