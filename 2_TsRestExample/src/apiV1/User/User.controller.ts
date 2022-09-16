@@ -104,8 +104,8 @@ class AuthorController {
    */
   public logout = handleErrorAsync(async (req: Request, res: Response) => {
     if (!req.user?.id) throw new Unauthorized('Invalid credentials');
-    const { id } = req.user;
-    await authSvc.logout(id);
+    const { id, sessionId } = req.user;
+    await authSvc.logout(id, sessionId);
     return res.status(200).send();
   });
 
