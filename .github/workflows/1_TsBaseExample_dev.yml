@@ -6,6 +6,7 @@ on:
 
 jobs:
   docker:
+    name: ts base example test
     timeout-minutes: 30
     runs-on: ubuntu-latest
 

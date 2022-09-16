@@ -6,6 +6,7 @@ on:
 
 jobs:
   docker:
+    name: ts-rest-example-prod build and test
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
