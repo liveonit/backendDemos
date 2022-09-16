@@ -3,7 +3,7 @@ import request from 'supertest';
 
 const API_URL = `http://localhost:${config.PORT}`;
 
-logger.debug({ API_URL });
+console.log({ API_URL });
 
 describe('Get posts should work fine', () => {
   let post1: any;
