@@ -3,8 +3,6 @@ import request from 'supertest';
 
 const API_URL = `http://localhost:${config.PORT}`;
 
-console.log({ API_URL });
-
 describe('Get posts should work fine', () => {
   let post1: any;
   test('Get all posts should return posts', async () => {
