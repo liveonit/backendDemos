@@ -29,7 +29,7 @@ jobs:
       working-directory: 1_TsBaseExample
 
     - name: Run tests
-      run: docker-compose log api npm run test
+      run: docker-compose logs api && npm run test
       working-directory: 1_TsBaseExample
 
     - name: Stop containers
