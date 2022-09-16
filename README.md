@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="./docs/images/backend-img.webp" alt="Markdownify" width="200">
+  <img src="./docs/images/backend-img.webp" alt="Backend Demos" width="200">
   <br>
   Backend Demos
   <br>

@@ -11,6 +11,17 @@ const router = Router();
  * Devuelve una lista de usuarios
  */
 router.get('/', authSvc.authRequiredMiddleware(['manageUsers']), authorController.getMany);
+
+/**
+ * Lee los datos del usuario autenticado
+ */
+router.get('/me', authSvc.authRequiredMiddleware([]), authorController.getProfile);
+
+/**
+ * Lee los datos del usuario autenticado
+ */
+router.put('/me', authSvc.authRequiredMiddleware([]), authorController.updateProfile);
+
 /**
  * Devuelve un usuario según su ID
  */
@@ -34,11 +45,6 @@ router.delete('/:id', authSvc.authRequiredMiddleware(['manageUsers']), authorCon
  * Elimina el usuario autenticado
  */
 router.delete('/', authSvc.authRequiredMiddleware([]), authorController.deleteMe);
-
-/**
- * Lee los datos del usuario autenticado
- */
-router.post('/', authSvc.authRequiredMiddleware([]), authorController.getProfile);
 
 /**
  * Autenticar usuario

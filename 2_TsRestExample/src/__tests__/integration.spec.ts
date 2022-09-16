@@ -4,7 +4,7 @@ import request from 'supertest';
 const API_URL = `http://localhost:${config.API_PORT}`;
 
 describe('👉👉👉 Api tests 👈👈👈', () => {
-  describe('🧪 Rest API status ❤️‍🩹', () => {
+  describe('🧪 Rest API status and not found error ❤️‍🩹', () => {
     test('Db and Redis connections should be working fine ', async () => {
       const res = await request(API_URL).get('/health').send();
       expect(res.status).toEqual(200);
@@ -20,6 +20,60 @@ describe('👉👉👉 Api tests 👈👈👈', () => {
       expect(res.body.error.message).toBe('Resource not found');
       expect(res.body.error.code).toBe(404);
       expect(res.body.error.success).toBeFalsy();
+    });
+  });
+
+  describe('🧪 Login user flows 🔐', () => {
+    let token: string;
+    test('Login should return unauthorized', async () => {
+      const res = await request(API_URL).post('/v1/user/login').send({
+        username: 'a@b.com',
+        password: '123123123',
+      });
+      expect(res.status).toBe(401);
+      expect(res.body.error.type).toBe('UNAUTHORIZED');
+      expect(res.body.error.message).toBe('Invalid Credentials');
+      expect(res.body.error.code).toBe(401);
+      expect(res.body.error.success).toBeFalsy();
+    });
+
+    test('Login should work fine and return the tokens', async () => {
+      const res = await request(API_URL).post('/v1/user/login').send({
+        username: 'admin',
+        password: 's3gur1d4dAdmin',
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.id).toBeDefined();
+      expect(res.body.accessToken).toBeDefined();
+      expect(res.body.refreshToken).toBeDefined();
+      token = `Bearer ${res.body.accessToken}`;
+    });
+
+    test('Get profile without token should return forbidden', async () => {
+      const res = await request(API_URL).get('/v1/user/me').send();
+      expect(res.status).toBe(403);
+      expect(res.body.error.type).toBe('FORBIDDEN');
+      expect(res.body.error.message).toBe('Invalid Permissions');
+      expect(res.body.error.code).toBe(403);
+      expect(res.body.error.success).toBeFalsy();
+    });
+
+    test('Get profile should work fine', async () => {
+      const res = await request(API_URL).get('/v1/user/me').set('authorization', token).send();
+      expect(res.status).toBe(200);
+      expect(res.body.id).toBeDefined();
+      expect(res.body.firstName).toBe('admin');
+      expect(res.body.lastName).toBe('user');
+      expect(res.body.email).toBe('admin@domain.example.com');
+    });
+
+    test('Update user should work fine', async () => {
+      const res = await request(API_URL).put('/v1/user/me').set('authorization', token).send({
+        lastName: 'updated user',
+        password: '12345678.'
+      });
+      console.log(res.body);
+      expect(res.status).toBe(200);
     });
   });
 });

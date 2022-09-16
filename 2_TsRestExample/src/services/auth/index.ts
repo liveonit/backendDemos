@@ -17,7 +17,7 @@ import { redisClient } from '@src/redisCient';
 import { CreateUserBodyType, RefreshTokenBodyType, UpdateUserBodyType } from '@src/typeDefs/User';
 import { LoginBodyType } from '@src/typeDefs/User/LoginBody';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { BadRequest, NotFound, Unauthorized } from '@src/utils/errors';
+import { BadRequest, Forbidden, NotFound, Unauthorized } from '@src/utils/errors';
 import { handleErrorAsync } from '@middlewares/errorCatcher';
 export interface CustomContext {
   req: Request;
@@ -101,10 +101,10 @@ class AuthService {
     if (user) {
       const correctPassword = await argon2.verify(user.password!, password);
       if (!correctPassword) {
-        throw new Unauthorized('Invalid Credentials');
+        throw new Unauthorized();
       }
     } else {
-      throw new Unauthorized('Invalid Credentials');
+      throw new Unauthorized();
     }
     const signedToken = await this.signToken(_.omit(user, ['password']));
     const result = userSessionSchema.parse(signedToken);
@@ -181,11 +181,11 @@ class AuthService {
   public authRequiredMiddleware(requiredPermissionsName: string[]): RequestHandler {
     return handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
       const token = this.getTokenFromHeader(req);
-      if (token == null) throw new Unauthorized('Invalid Credentials');
+      if (token == null) throw new Forbidden();
       const userPayload: UserPayloadType | null = userPayloadSchema.parse(
         verifyJwt(token, 'ACCESS_TOKEN_PUBLIC_KEY'),
       );
-      if (!userPayload) throw new Unauthorized('Invalid credentials');
+      if (!userPayload) throw new Forbidden();
       let result;
       if (requiredPermissionsName.length) {
         let userPermissions: string[] = [];
@@ -195,7 +195,7 @@ class AuthService {
         }
         const validPermissions = requiredPermissionsName.filter((p) => userPermissions.includes(p));
         if (requiredPermissionsName.length && !validPermissions.length)
-          throw new Unauthorized('Invalid permissions');
+          throw new Forbidden();
         else result = userPayload;
       } else {
         result = userPayload;

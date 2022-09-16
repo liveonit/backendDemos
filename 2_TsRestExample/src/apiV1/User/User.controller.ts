@@ -80,6 +80,17 @@ class AuthorController {
   });
 
   /*
+   * Actualiza el perfil del usuario logueado
+   */
+  public updateProfile = handleErrorAsync(async (req: Request, res: Response) => {
+    if (!req.user?.id) throw new Unauthorized('Invalid credentials');
+    const { id } = req.user;
+    const user = updateUserBodySchema.parse(req.body);
+    const updatedUser = await authSvc.updateUser(id, user);
+    return res.status(200).json(updatedUser);
+  });
+
+  /*
    * Autenticar usuario
    */
   public logIn = handleErrorAsync(async (req: Request, res: Response) => {

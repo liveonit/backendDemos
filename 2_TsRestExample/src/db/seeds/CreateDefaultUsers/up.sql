@@ -16,7 +16,7 @@ VALUES
     1,
     'admin',
     'user',
-    'admin@seguridad.ucu.com'
+    'admin@domain.example.com'
   );
 
 INSERT INTO
@@ -44,7 +44,7 @@ VALUES
     1,
     'funcionario',
     'uno',
-    'funcionario1@seguridad.ucu.com'
+    'funcionario1@domain.example.com'
   );
 
 INSERT INTO
@@ -72,5 +72,5 @@ VALUES
     1,
     'usuario',
     'uno',
-    'usuario@seguridad.ucu.com'
+    'usuario@domain.example.com'
   );
