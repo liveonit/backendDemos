@@ -4,7 +4,7 @@
   "description": "Basic example of Rest APP written in Typescript and using Redis, MySql",
   "main": "index.js",
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "clean": "rm -rf build/",

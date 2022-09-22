@@ -9,6 +9,7 @@ export const enum ErrorCode {
 export const enum ErrorName {
   BAD_REQUEST = 'BAD_REQUEST',
   UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
   NOT_FOUND = 'NOT_FOUND',
   INTERNAL_SERVER = 'INTERNAL_SERVER',
 }

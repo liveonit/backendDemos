@@ -9,6 +9,7 @@ export const userPayloadSchema = z.object({
   lastName: z.string(),
   email: z.string(),
   roles: z.array(z.any()),
+  sessionId: z.string(),
 });
 export type UserPayloadType = z.infer<typeof userPayloadSchema>;
 

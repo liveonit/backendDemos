@@ -17,8 +17,9 @@ import { redisClient } from '@src/redisCient';
 import { CreateUserBodyType, RefreshTokenBodyType, UpdateUserBodyType } from '@src/typeDefs/User';
 import { LoginBodyType } from '@src/typeDefs/User/LoginBody';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { BadRequest, NotFound, Unauthorized } from '@src/utils/errors';
+import { BadRequest, Forbidden, NotFound, Unauthorized } from '@src/utils/errors';
 import { handleErrorAsync } from '@middlewares/errorCatcher';
+import { uuid } from '@src/utils/helpers/uuid';
 export interface CustomContext {
   req: Request;
   res: Response;
@@ -54,7 +55,7 @@ class AuthService {
 
   public async delete(id: string): Promise<boolean> {
     const result = await User.delete({ id });
-    await redisClient.del(id);
+    await redisClient.del(`${id}:*`);
     if (!result.affected) throw new NotFound();
     return !!result.affected;
   }
@@ -73,19 +74,20 @@ class AuthService {
   }
 
   public signToken = async (user: _.Omit<User, 'password'>) => {
+    const sessionId = uuid();
     // Sign the access token
-    const accessToken = signJwt(user, 'ACCESS_TOKEN_PRIVATE_KEY', {
+    const accessToken = signJwt({ ...user, sessionId }, 'ACCESS_TOKEN_PRIVATE_KEY', {
       expiresIn: `${config.ACCESS_TOKEN_EXPIRES_IN}m`,
     });
 
     // Sign the refresh token
-    const refreshToken = signJwt(user, 'REFRESH_TOKEN_PRIVATE_KEY', {
+    const refreshToken = signJwt({ ...user, sessionId }, 'REFRESH_TOKEN_PRIVATE_KEY', {
       expiresIn: `${config.REFRESH_TOKEN_EXPIRES_IN}m`,
     });
 
     // Create a Session
-    redisClient.set(user.id, JSON.stringify(user), {
-      EX: (config.REFRESH_TOKEN_EXPIRES_IN + 60) * 60,
+    redisClient.set(`${user.id}:${sessionId}`, JSON.stringify(user), {
+      EX: config.REFRESH_TOKEN_EXPIRES_IN * 60,
     });
     const result = userSessionSchema.parse({ id: user.id, accessToken, refreshToken });
     // Return access token
@@ -101,18 +103,18 @@ class AuthService {
     if (user) {
       const correctPassword = await argon2.verify(user.password!, password);
       if (!correctPassword) {
-        throw new Unauthorized('Invalid Credentials');
+        throw new Unauthorized();
       }
     } else {
-      throw new Unauthorized('Invalid Credentials');
+      throw new Unauthorized();
     }
     const signedToken = await this.signToken(_.omit(user, ['password']));
     const result = userSessionSchema.parse(signedToken);
     return result;
   }
 
-  public async logout(id: string): Promise<void> {
-    await redisClient.del(id);
+  public async logout(id: string, sessionId: string): Promise<void> {
+    await redisClient.del(`${id}:${sessionId}`);
   }
 
   public async refreshToken(refreshTokenInput: RefreshTokenBodyType): Promise<UserSessionType> {
@@ -127,7 +129,7 @@ class AuthService {
       }
 
       // Check if the user has a valid session
-      const session = await redisClient.get(decoded.id);
+      const session = await redisClient.get(`${decoded.id}:${decoded.sessionId}`);
       if (!session) {
         throw new BadRequest('Could not refresh access token');
       }
@@ -181,11 +183,11 @@ class AuthService {
   public authRequiredMiddleware(requiredPermissionsName: string[]): RequestHandler {
     return handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
       const token = this.getTokenFromHeader(req);
-      if (token == null) throw new Unauthorized('Invalid Credentials');
+      if (token == null) throw new Forbidden();
       const userPayload: UserPayloadType | null = userPayloadSchema.parse(
         verifyJwt(token, 'ACCESS_TOKEN_PUBLIC_KEY'),
       );
-      if (!userPayload) throw new Unauthorized('Invalid credentials');
+      if (!userPayload) throw new Forbidden();
       let result;
       if (requiredPermissionsName.length) {
         let userPermissions: string[] = [];
@@ -194,8 +196,7 @@ class AuthService {
             userPermissions = [...userPermissions, ...role.permissions.map((p: Role) => p.name)];
         }
         const validPermissions = requiredPermissionsName.filter((p) => userPermissions.includes(p));
-        if (requiredPermissionsName.length && !validPermissions.length)
-          throw new Unauthorized('Invalid permissions');
+        if (requiredPermissionsName.length && !validPermissions.length) throw new Forbidden();
         else result = userPayload;
       } else {
         result = userPayload;

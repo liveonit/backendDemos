@@ -8,7 +8,15 @@ export const errorCatcher = (
   res: Response,
   _next: NextFunction,
 ): Response<unknown, Record<string, unknown>> => {
-  logger.error(err);
+  logger.error({
+    error: {
+      type: err.name,
+      message: err.message,
+      code: err.code,
+      success: false,
+      stack: err.stack,
+    },
+  });
   if (err instanceof BaseError)
     return config.ENVIRONMENT === 'development'
       ? res.status(err.code).json({
@@ -29,7 +37,6 @@ export const handleErrorAsync =
     try {
       await func(req, res, next);
     } catch (error) {
-      logger.error({ error });
       next(error);
     }
   };
