@@ -24,7 +24,7 @@ Este repositorio cuenta con 3 backend APIs que corren en el entorno de `NodeJS`,
 
 ## Build With
 
-<svg fill="none" viewBox="0 0 800 400" width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+<svg fill="none" viewBox="0 0 800 400" width="100%" height="400" xmlns="http://www.w3.org/2000/svg">
 <foreignObject width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml">
 
@@ -48,7 +48,6 @@ Este repositorio cuenta con 3 backend APIs que corren en el entorno de `NodeJS`,
 }
 </style>
 <div id="container">
-
   <img src="./docs/images/docker-circle.png" alt="Made with Angular" title="Angular"/>
   <img src="./docs/images/mysql-circular.png" alt="Developed using Browsersync" title="Browsersync"/>
   <img src="./docs/images/redis.png" alt="Developed using Browsersync" title="Browsersync"/>
