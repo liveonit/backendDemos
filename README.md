@@ -24,12 +24,11 @@ Este repositorio cuenta con 3 backend APIs que corren en el entorno de `NodeJS`,
 
 ## Build With
 
-
 <div id="container" style="text-align: justify; width: 100%; display: inline-block;">
-  <img src="./docs/images/docker-circle.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Made with Angular" title="Angular"/>
-  <img src="./docs/images/mysql-circular.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Developed using Browsersync" title="Browsersync"/>
-  <img src="./docs/images/redis.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Developed using Browsersync" title="Browsersync"/>
-  <img src="./docs/images/nodejs-circular.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Developed using Browsersync" title="Browsersync"/>
-  <img src="./docs/images/restful-api-circle.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Made with Bootstrap" title="Bootstrap"/>
-  <img src="./docs/images/graphql.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Made with Bootstrap" title="Bootstrap"/>
+  <img src="./docs/images/docker-circle.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Made with Docker" title="Docker"/>
+  <img src="./docs/images/mysql-circular.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Persisted data using MySQL" title="MySQL"/>
+  <img src="./docs/images/redis.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Cached data using redis" title="Redis"/>
+  <img src="./docs/images/nodejs-circular.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Developed using NodeJs" title="NodeJs"/>
+  <img src="./docs/images/restful-api-circle.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Examples using Rest" title="Restful"/>
+  <img src="./docs/images/graphql.png" style="width: 100px; display: inline-block; vertical-align: top;" alt="Examples using GraphQL" title="GraphQL"/>
 </div>
