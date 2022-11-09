@@ -11,6 +11,7 @@ export interface UserSessionPayload {
   lastName?: string;
   email?: string;
   roles?: Role[];
+  sessionId: string;
 }
 
 @ObjectType()

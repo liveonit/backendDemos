@@ -3,13 +3,13 @@ import { config } from '@src/config';
 
 export const logger = {
   debug: (data: any): void => {
-    if (!config.isProduction)
+    if (config.ENVIRONMENT !== 'production')
       typeof data === 'object'
         ? console.debug(chalk.hex('ffa500')(`🐛 [Debug]: ${JSON.stringify(data, null, 2)}`))
         : console.debug(chalk.hex('ffa500')(`🐛 [Debug]: ${data?.toString()}`));
   },
   log: (data: any): void => {
-    if (!config.isProduction) console.log(data);
+    if (config.ENVIRONMENT !== 'production') console.log(data);
   },
   info: (data: any, processName?: string): void => {
     typeof data === 'object'

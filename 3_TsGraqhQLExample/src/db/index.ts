@@ -12,11 +12,11 @@ export class Db {
   constructor(loggingEnabled?: boolean) {
     this.config = {
       type: 'mysql',
-      host: config.dbHost,
-      port: config.dbPort,
-      username: config.dbUser,
-      password: config.dbPassword,
-      database: config.dbName,
+      host: config.DB_HOST,
+      port: config.DB_PORT,
+      username: config.DB_USER,
+      password: config.DB_PASSWORD,
+      database: config.DB_NAME,
       synchronize: false,
       logging: loggingEnabled ? ['error', 'query', 'schema'] : ['error'],
       entities: [path.resolve(__dirname, '../entities/**/*{.js,.ts}')],
@@ -114,4 +114,4 @@ export class Db {
   }
 }
 
-export const db = new Db(!config.isProduction);
+export const db = new Db(config.ENVIRONMENT !== 'production');

@@ -4,7 +4,7 @@ import { config } from '@src/config';
 
 export const signJwt = (
   payload: Object,
-  key: 'accessTokenPrivateKey' | 'refreshTokenPrivateKey',
+  key: 'ACCESS_TOKEN_PRIVATE_KEY' | 'REFRESH_TOKEN_PRIVATE_KEY',
   options: SignOptions = {},
 ) => {
   const privateKey = Buffer.from(config[key], 'base64').toString('ascii');
@@ -16,7 +16,7 @@ export const signJwt = (
 
 export const verifyJwt = <T>(
   token: string,
-  key: 'accessTokenPublicKey' | 'refreshTokenPublicKey',
+  key: 'ACCESS_TOKEN_PUBLIC_KEY' | 'REFRESH_TOKEN_PUBLIC_KEY',
 ): T | null => {
   try {
     const publicKey = Buffer.from(config[key], 'base64').toString('ascii');

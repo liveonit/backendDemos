@@ -42,14 +42,21 @@ class AuthService {
     return _.omit(newUser, ['password']);
   }
 
-  public async updateUser(id: string, user: UpdateUserBodyType): Promise<Omit<User, 'password'>> {
+  public async updateUser(id: string, user: UpdateUserBodyType, sessionId?: string): Promise<Omit<User, 'password'>> {
     let currentUser = await User.findOneOrFail({
       where: { id },
       relations: ['roles'],
     });
-    if (user.password) currentUser.password = await argon2.hash(user.password);
+    if (user.password) {
+      currentUser.password = await argon2.hash(user.password);
+      await redisClient.del(`${id}:*`);
+    }
     if (user.roleIds) currentUser.roles = await Role.find({ where: { name: In(user.roleIds) } });
     currentUser = await currentUser.save();
+    if (sessionId)
+      redisClient.set(`${currentUser.id}:${sessionId}`, JSON.stringify(_.omit(currentUser, ['password'])), {
+        EX: config.REFRESH_TOKEN_EXPIRES_IN * 60,
+      });
     return _.omit(currentUser, ['password']);
   }
 
@@ -184,10 +191,14 @@ class AuthService {
     return handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
       const token = this.getTokenFromHeader(req);
       if (token == null) throw new Forbidden();
-      const userPayload: UserPayloadType | null = userPayloadSchema.parse(
+      const decoded: UserPayloadType | null = userPayloadSchema.parse(
         verifyJwt(token, 'ACCESS_TOKEN_PUBLIC_KEY'),
       );
-      if (!userPayload) throw new Forbidden();
+
+      // Check if the user has a valid session
+      const session = await redisClient.get(`${decoded.id}:${decoded.sessionId}`);
+      if (!decoded || !session) throw new Forbidden();
+      const userPayload = JSON.parse(session) as UserPayloadType;
       let result;
       if (requiredPermissionsName.length) {
         let userPermissions: string[] = [];

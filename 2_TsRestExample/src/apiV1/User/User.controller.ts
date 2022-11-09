@@ -84,9 +84,9 @@ class AuthorController {
    */
   public updateProfile = handleErrorAsync(async (req: Request, res: Response) => {
     if (!req.user?.id) throw new Unauthorized('Invalid credentials');
-    const { id } = req.user;
+    const { id, sessionId } = req.user;
     const user = updateUserBodySchema.parse(req.body);
-    const updatedUser = await authSvc.updateUser(id, user);
+    const updatedUser = await authSvc.updateUser(id, user, sessionId);
     return res.status(200).json(updatedUser);
   });
 

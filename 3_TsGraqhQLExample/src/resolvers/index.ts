@@ -4,10 +4,17 @@ import { RoleResolver } from './RoleResolver';
 import { AuthorResolver } from '@src/resolvers/AuthorResolver';
 import { BookResolver } from './BookResolver';
 import { PermissionResolver } from './PermissionResolver';
-export const resolvers = [
+import { config } from '@src/config';
+import { TestsUtilResolver } from './TestsUtil';
+let resolvers: NonEmptyArray<Function> = [
   UserResolver,
   RoleResolver,
   AuthorResolver,
   BookResolver,
   PermissionResolver,
-] as NonEmptyArray<Function>;
+]
+
+if (config.ENVIRONMENT !== 'production')
+  resolvers = [...resolvers, TestsUtilResolver]
+
+export {resolvers}

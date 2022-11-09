@@ -22,7 +22,7 @@ export const gqlLogMiddleware: MiddlewareFn = async ({ info }, next) => {
     log['ErrorStack'] = error.stack?.split('\n');
     logger.error(log, 'GraphQLLogger');
     throw new ApolloError(error.message, error.name, {
-      stacktrace: !config.isProduction && error.stack?.split('\n'),
+      stacktrace: config.ENVIRONMENT !== 'production' && error.stack?.split('\n'),
     });
   }
 };

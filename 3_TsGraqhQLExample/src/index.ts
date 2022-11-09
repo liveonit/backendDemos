@@ -98,7 +98,7 @@ async function main() {
           };
         },
       },
-      process.env.NODE_ENV === 'production'
+      process.env.ENVIRONMENT === 'production'
         ? ApolloServerPluginLandingPageProductionDefault({
             embed: true,
             graphRef: 'user@example.com',
@@ -121,9 +121,9 @@ async function main() {
   app.use(json());
   app.use(urlencoded({ extended: false }));
 
-  server.listen({ host: '0.0.0.0', port: config.apiPort }, (): void => {
-    logger.info(`Enviornment: ===>>> ${config.nodeEnv} <<<===`, 'Node');
-    logger.info(`Express server is now running on port ${config.apiPort}`, 'Express');
+  server.listen({ host: '0.0.0.0', port: config.API_PORT }, (): void => {
+    logger.info(`Enviornment: ===>>> ${config.ENVIRONMENT} <<<===`, 'Node');
+    logger.info(`Express server is now running on port ${config.API_PORT}`, 'Express');
     logger.info(`is now running on /graphql`, 'GraphQL');
   });
 }

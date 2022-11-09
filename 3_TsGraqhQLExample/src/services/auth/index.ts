@@ -16,6 +16,7 @@ import { signJwt, verifyJwt } from './jwt';
 import { UserSession, UserSessionPayload } from '@entities/UserSession';
 import _ from 'lodash';
 import { redisClient } from '@src/redisCient';
+import { uuid } from '@src/utils/helpers/uuid';
 export interface CustomContext {
   req: Request;
   res: Response;
@@ -24,7 +25,7 @@ export interface CustomContext {
 declare global {
   namespace Express {
     interface Request {
-      user?: UserSession;
+      user?: UserSessionPayload;
     }
   }
 }
@@ -38,14 +39,21 @@ class AuthSvc {
     return _.omit(newUser, ['password']);
   }
 
-  public async updateUser(user: UpdateUserInput): Promise<Omit<User, 'password'>> {
+  public async updateUser(id: string, user: UpdateUserInput, sessionId?: string): Promise<Omit<User, 'password'>> {
     let currentUser = await User.findOneOrFail({
-      where: { id: user.id },
+      where: { id },
       relations: ['roles'],
     });
-    if (user.password) currentUser.password = await argon2.hash(user.password);
+    if (user.password) {
+      currentUser.password = await argon2.hash(user.password);
+      await redisClient.del(`${id}:*`);
+    }
     if (user.roleIds) currentUser.roles = await Role.find({ where: { name: In(user.roleIds) } });
     currentUser = await currentUser.save();
+    if (sessionId)
+      redisClient.set(`${currentUser.id}:${sessionId}`, JSON.stringify({ ..._.omit(currentUser, ['password']), sessionId }), {
+        EX: config.REFRESH_TOKEN_EXPIRES_IN * 60,
+      });
     return _.omit(currentUser, ['password']);
   }
 
@@ -70,19 +78,20 @@ class AuthSvc {
   }
 
   public signToken = async (user: _.Omit<User, 'password'>) => {
+    const sessionId = uuid();
     // Sign the access token
-    const accessToken = signJwt(user, 'accessTokenPrivateKey', {
-      expiresIn: `${config.accessTokenExpiresIn}m`,
+    const accessToken = signJwt({...user, sessionId }, 'ACCESS_TOKEN_PRIVATE_KEY', {
+      expiresIn: `${config.ACCESS_TOKEN_EXPIRES_IN}m`,
     });
 
     // Sign the refresh token
-    const refreshToken = signJwt(user, 'refreshTokenPrivateKey', {
-      expiresIn: `${config.refreshTokenExpiresIn}m`,
+    const refreshToken = signJwt({...user, sessionId }, 'REFRESH_TOKEN_PRIVATE_KEY', {
+      expiresIn: `${config.REFRESH_TOKEN_EXPIRES_IN}m`,
     });
 
     // Create a Session
-    redisClient.set(user.id, JSON.stringify(user), {
-      EX: (config.refreshTokenExpiresIn + 60) * 60,
+    redisClient.set(`${user.id}:${sessionId}`, JSON.stringify(user), {
+      EX: config.REFRESH_TOKEN_EXPIRES_IN * 60,
     });
 
     // Return access token
@@ -106,8 +115,8 @@ class AuthSvc {
     return this.signToken(_.omit(user, ['password']));
   }
 
-  public async logout(id: string): Promise<void> {
-    await redisClient.del(id);
+  public async logout(id: string, sessionId: string): Promise<void> {
+    await redisClient.del(`${id}:${sessionId}`);
   }
 
   public async refreshToken(refreshTokenInput: RefreshTokenInput): Promise<UserSession> {
@@ -115,22 +124,22 @@ class AuthSvc {
       // Validate the Refresh token
       const decoded = verifyJwt<UserSessionPayload>(
         refreshTokenInput.refreshToken,
-        'refreshTokenPublicKey',
+        'REFRESH_TOKEN_PUBLIC_KEY',
       );
       if (!decoded) {
         throw new ApolloError('Could not refresh access token');
       }
 
       // Check if the user has a valid session
-      const session = await redisClient.get(decoded.id);
+      const session = await redisClient.get(`${decoded.id}:${decoded.sessionId}`);
       if (!session) {
         throw new ApolloError('Could not refresh access token');
       }
       const userPayload = JSON.parse(session);
 
       // Sign new access token
-      const accessToken = signJwt(userPayload, 'accessTokenPrivateKey', {
-        expiresIn: `${config.accessTokenExpiresIn}m`,
+      const accessToken = signJwt(userPayload, 'ACCESS_TOKEN_PRIVATE_KEY', {
+        expiresIn: `${config.ACCESS_TOKEN_EXPIRES_IN}m`,
       });
 
       // Send the access token as cookie
@@ -150,26 +159,36 @@ class AuthSvc {
 
   public gqlAuthRequiredMiddleware(requiredPermissionsName: string[]): MiddlewareFn<CustomContext> {
     return async ({ context }, next) => {
-      const token = this.getTokenFromHeader(context.req);
-      if (token == null) throw new ApolloError('Invalid Credentials');
-      const userSession: UserSessionPayload | null = verifyJwt(token, 'accessTokenPublicKey');
-      if (!userSession) throw new ApolloError('Invalid credentials');
-      let result;
-      if (requiredPermissionsName.length) {
-        let userPermissions: string[] = [];
-        for (const role of userSession.roles || []) {
-          if (role.permissions)
-            userPermissions = [...userPermissions, ...role.permissions.map((p) => p.name)];
+      try {
+        const token = this.getTokenFromHeader(context.req);
+        if (token == null) throw new ApolloError('Invalid Credentials');
+        const decoded: UserSessionPayload | null = verifyJwt(token, 'ACCESS_TOKEN_PUBLIC_KEY');
+        if (!decoded) throw new ApolloError('Invalid credentials');
+
+        const session = await redisClient.get(`${decoded.id}:${decoded.sessionId}`);
+        if (!session) throw new ApolloError('Invalid credentials');
+        const userPayload = JSON.parse(session) as UserSessionPayload;
+
+        let result;
+        if (requiredPermissionsName.length) {
+          let userPermissions: string[] = [];
+          for (const role of userPayload.roles || []) {
+            if (role.permissions)
+              userPermissions = [...userPermissions, ...role.permissions.map((p) => p.name)];
+          }
+          const validPermissions = requiredPermissionsName.filter((p) => userPermissions.includes(p));
+          if (requiredPermissionsName.length && !validPermissions.length)
+            throw new ApolloError('Invalid permissions');
+          else result = userPayload;
+        } else {
+          result = userPayload;
         }
-        const validPermissions = requiredPermissionsName.filter((p) => userPermissions.includes(p));
-        if (requiredPermissionsName.length && !validPermissions.length)
-          throw new ApolloError('Invalid permissions');
-        else result = userSession;
-      } else {
-        result = userSession;
+        context.req.user = result;
+        return next()
+      } catch(err) {
+        logger.error(err);
+        throw(err);
       }
-      context.req.user = result;
-      return next();
     };
   }
 }
